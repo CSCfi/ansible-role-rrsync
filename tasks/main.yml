@@ -1,0 +1,20 @@
+---
+# tasks file for ansible-role-rrsync
+#
+- name: Install rsync
+  action: >
+    {{ ansible_pkg_mgr }}
+    name=rsync
+    state=installed
+
+- name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
+  file: src=/usr/share/doc/rsync-3.0.9/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link 
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" 
+
+- name: symlink rrsync script to /usr/local/bin on RHEL6 derivatives
+  file: src=/usr/share/doc/rsync-3.0.6/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link mode=0755
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6" 
+
+- name: on debian gunzip the rsync
+  unarchive: src=/usr/share/doc/rsync/scripts/rrsync.gz dest=/usr/local/bin copy=no mode=0755
+  when: ansible_os_family == "Debian"
