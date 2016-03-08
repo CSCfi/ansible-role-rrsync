@@ -11,6 +11,13 @@ rsync and sshd
 Role Variables
 --------------
 
+see defaults/main.yml
+
+<pre>
+rrsync_server: True # This makes symlink so that /usr/local/bin/rrsync exists and creates a directory
+rrsync_client: True # This adds a cronjob that rsyncs some files
+</pre>
+
 Dependencies
 ------------
 
