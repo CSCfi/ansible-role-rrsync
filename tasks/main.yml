@@ -21,6 +21,11 @@
   unarchive: src=/usr/share/doc/rsync/scripts/rrsync.gz dest=/usr/local/bin copy=no mode=0755
   when: ansible_os_family == "Debian" and rrsync_server
 
+- name: create rrsync directory
+  file: path={{ rsync_server_directory }} state=directory
+        mode=0755
+  when: rrsync_server and rrsync_server_create_directory != False
+
 ## Client
 - name: Copy in private key
   copy: src="{{ rrsync_private_key }}"
