@@ -4,7 +4,7 @@
 # Server - receives files 
 rrsync_server: True
 rrsync_server_create_directory: False
-rsync_server_directory: "/backup/metadata"
+rrsync_server_directory: "/backup/metadata"
 # Client - rsync files to a server
 rrsync_client: False
 rrsync_private_key: "files/rrsync/id_ed25519_rrsync"
