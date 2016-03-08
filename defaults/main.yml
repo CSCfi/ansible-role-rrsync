@@ -9,7 +9,7 @@ rrsync_server_directory: "/backup/metadata"
 rrsync_client: False
 rrsync_private_key: "files/rrsync/id_ed25519_rrsync"
 rrsync_source: "/etc/sysconfig/"
-rrsync_cron_user: "userthatrunsrsync"
+#rrsync_cron_user: "userthatrunsrsync"
 rsync_path: "/usr/bin/rsync"
 rrsync_commands: 
  - { job: "", hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }
