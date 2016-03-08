@@ -51,6 +51,13 @@
         recurse=yes
   when: rrsync_cron_user is defined and rrsync_client
 
+- name: Set permission on .ssh
+  file: path="/home/{{ rrsync_cron_user }}/.ssh/"
+        owner="{{ rrsync_cron_user }}"
+        state=directory
+        mode=0700
+  when: rrsync_cron_user is defined and rrsync_client
+
 - name: Add rsync cronjobs
   cron: name="{{ item.name }}" minute={{ item.minute }} hour={{ item.hour }}
         user="{{ item.user }}"
