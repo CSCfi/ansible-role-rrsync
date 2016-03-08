@@ -29,11 +29,10 @@
 ## Client
 - name: Copy in private key
   copy: src="{{ rrsync_private_key }}"
-        dest="/home/{{ item['name'] }}/.ssh/"
-        owner="{{ item.name }}"
+        dest="/home/{{ rrsync_cron_user }}/.ssh/"
+        owner="{{ rrsync_cron_user }}"
         mode=0600
-  with_items: adminusers
-  when: item.options is defined and rrsync_client
+  when: rrsync_cron_user is defined and rrsync_client
 
 - name: Add rsync cronjobs
   cron: name="{{ item.name }}" minute={{ item.minute }} hour={{ item.hour }}
