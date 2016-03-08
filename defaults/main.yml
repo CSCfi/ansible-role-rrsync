@@ -11,6 +11,7 @@ rrsync_private_key: "files/rrsync/id_ed25519_rrsync"
 rrsync_source: "/etc/sysconfig/"
 #rrsync_cron_user: "userthatrunsrsync"
 rsync_path: "/usr/bin/rsync"
+# item.name should not have spaces, it is also used to name the cron.d/file
 rrsync_commands: 
  - { job: "", hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }
 # - { job: "{{ rsync_path }} -avz {{ rrsync_source }} --include='meta/' --exclude='data/' remoteuser@rsync.example.com hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }

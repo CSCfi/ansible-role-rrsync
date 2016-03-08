@@ -46,5 +46,6 @@
   cron: name="{{ item.name }}" minute={{ item.minute }} hour={{ item.hour }}
         user="{{ item.user }}"
         job="{{ item.job }}"
+        cron_file="{{ item.name }}"
   with_items: rrsync_commands
   when: rrsync_commands.0.job != "" and rrsync_client
