@@ -23,7 +23,7 @@
 
 ## Client
 - name: Copy in private key
-  copy: path="{{ lookup('file', {{ rrsync_private_key }} }}"
+  copy: src="{{ rrsync_private_key }}"
         dest="/home/{{ item['name'] }}/.ssh/"
         owner="{{ item.name }}"
         mode=0600
