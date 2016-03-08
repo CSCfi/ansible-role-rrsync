@@ -24,6 +24,7 @@
 - name: create rrsync directory
   file: path={{ rsync_server_directory }} state=directory
         mode=0755
+        owner={{ rrsync_cron_user }}
   when: rrsync_server and rrsync_server_create_directory != False
 
 ## Client
@@ -32,6 +33,13 @@
         dest="/home/{{ rrsync_cron_user }}/.ssh/"
         owner="{{ rrsync_cron_user }}"
         mode=0600
+  when: rrsync_cron_user is defined and rrsync_client
+
+- name: Set ownership
+  file: path="/home/{{ rrsync_cron_user }}/.ssh/"
+        owner="{{ rrsync_cron_user }}"
+        mode=0700
+        state=directory
   when: rrsync_cron_user is defined and rrsync_client
 
 - name: Add rsync cronjobs
