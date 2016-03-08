@@ -51,6 +51,7 @@ Including an example of how to use your role (for instance, with variables passe
          - { role: ansible-role-rrsync }
          - { role: ansible-role-users }
 
+
 License
 -------
 
