@@ -1,20 +1,38 @@
 ---
 # tasks file for ansible-role-rrsync
 #
+## Both
 - name: Install rsync
   action: >
     {{ ansible_pkg_mgr }}
     name=rsync
     state=installed
 
+## Server
 - name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
   file: src=/usr/share/doc/rsync-3.0.9/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link mode=0755 follow=yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" 
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" and rrsync_server
 
 - name: symlink rrsync script to /usr/local/bin on RHEL6 derivatives
   file: src=/usr/share/doc/rsync-3.0.6/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link mode=0755 follow=yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6" 
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6" and rrsync_server
 
 - name: on debian gunzip the rsync
   unarchive: src=/usr/share/doc/rsync/scripts/rrsync.gz dest=/usr/local/bin copy=no mode=0755
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and rrsync_server
+
+## Client
+- name: Copy in private key
+  copy: path="{{ lookup('file', {{ rrsync_private_key }} }}"
+        dest="/home/{{ item['name'] }}/.ssh/"
+        owner="{{ item.name }}"
+        mode=0600
+  with_items: adminusers
+  when: item.options is defined and rrsync_client
+
+- name: Add rsync cronjobs
+  cron: name="{{ item.name }}" minute={{ item.minute }} hour={{ item.hour }}
+        user="{{ item.user }}"
+        job="{{ item.job }}"
+  with_items: rrsync_commands
+  when: rrsync_commands.0.job != "" and rrsync_client
