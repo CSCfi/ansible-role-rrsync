@@ -18,3 +18,4 @@ rsync_path: "/usr/bin/rsync"
 rrsync_commands: 
  - { job: "", hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }
 # - { job: "{{ rsync_path }} -avz {{ rrsync_source }} --include='meta/' --exclude='data/' remoteuser@rsync.example.com hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }
+# - { job: "{{ rsync_path }} -av --delete {{ rrsync_source }} --include='meta/' --exclude='data/' remoteuser@rsync.example.com hour: 5, minute: 0, name: "job1", user: "{{ rrsync_cron_user }}" }
