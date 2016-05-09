@@ -35,12 +35,21 @@
         mode=0600
   when: rrsync_cron_user is defined and rrsync_client
 
-- name: ensure rrsync_hosts are known hosts
+- name: ensure rrsync_hosts are known hosts RSA
   lineinfile:
     dest: /home/{{ rrsync_cron_user }}/.ssh/known_hosts
     create: yes
     state: present
-    line: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
+    line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t rsa ' + item) }}"
+  with_items: "{{ rrsync_hosts }}"
+  when: rrsync_hosts.0 != "" and rrsync_client
+
+- name: ensure rrsync_hosts are known hosts ECDSA
+  lineinfile:
+    dest: /home/{{ rrsync_cron_user }}/.ssh/known_hosts
+    create: yes
+    state: present
+    line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t ecdsa ' + item) }}"
   with_items: "{{ rrsync_hosts }}"
   when: rrsync_hosts.0 != "" and rrsync_client
 
