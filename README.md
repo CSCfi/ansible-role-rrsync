@@ -18,6 +18,13 @@ rrsync_server: True # This makes symlink so that /usr/local/bin/rrsync exists an
 rrsync_client: True # This adds a cronjob that rsyncs some files
 </pre>
 
+Add ssh host keys to known_hosts file can be controlled by setting variables:
+ - rrsync_known_hosts_rsa: False
+ - rrsync_known_hosts_ecdsa: True
+
+Probably best to only use one of these.
+
+
 Dependencies
 ------------
 
