@@ -42,7 +42,7 @@
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t rsa ' + item) }}"
   with_items: "{{ rrsync_hosts }}"
-  when: rrsync_hosts.0 != "" and rrsync_client
+  when: rrsync_hosts.0 != "" and rrsync_client and rrsync_known_hosts_rsa
 
 - name: ensure rrsync_hosts are known hosts ECDSA
   lineinfile:
@@ -51,7 +51,7 @@
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t ecdsa ' + item) }}"
   with_items: "{{ rrsync_hosts }}"
-  when: rrsync_hosts.0 != "" and rrsync_client
+  when: rrsync_hosts.0 != "" and rrsync_client and rrsync_known_hosts_ecdsa
 
 - name: Set ownership
   file: path="/home/{{ rrsync_cron_user }}/.ssh/"
