@@ -37,7 +37,7 @@
     - rrsync_server
 
 - name: on debian gunzip the rsync
-  unarchive: src=/usr/share/doc/rsync/scripts/rrsync.gz dest=/usr/local/bin copy=no mode=0755
+  shell: gunzip < /usr/share/doc/rsync/scripts/rrsync.gz > /usr/local/bin/rrsync creates=/usr/local/bin/rrsync
   when: ansible_os_family == "Debian" and rrsync_server
 
 - name: create rrsync directory
