@@ -5,6 +5,8 @@ ansible-role-rrsync
 
 Installs rrsync
 
+Basic support for Debian based OS, needs more testing though.
+
 Requirements
 ------------
 
