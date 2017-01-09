@@ -3,19 +3,38 @@
 #
 ## Both
 - name: Install rsync
-  action: >
-    {{ ansible_pkg_mgr }}
-    name=rsync
-    state=installed
+  package: 
+    name: rsync
+    state: installed
 
 ## Server
 - name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
-  file: src=/usr/share/doc/rsync-3.0.9/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link mode=0755 follow=yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" and rrsync_server
+  file: 
+    src: /usr/share/doc/rsync-3.0.9/support/rrsync 
+    dest: /usr/local/bin/rrsync 
+    owner: root 
+    group: root 
+    state: link 
+    mode: 0755 
+    follow: yes
+  when: 
+    - ansible_os_family == "RedHat" 
+    - ansible_distribution_major_version == "7" 
+    - rrsync_server
 
 - name: symlink rrsync script to /usr/local/bin on RHEL6 derivatives
-  file: src=/usr/share/doc/rsync-3.0.6/support/rrsync dest=/usr/local/bin/rrsync owner=root group=root state=link mode=0755 follow=yes
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6" and rrsync_server
+  file: 
+    src: /usr/share/doc/rsync-3.0.6/support/rrsync 
+    dest: /usr/local/bin/rrsync 
+    owner: root 
+    group: root 
+    state: link 
+    mode: 0755 
+    follow: yes
+  when: 
+    - ansible_os_family == "RedHat" 
+    - ansible_distribution_major_version == "6" 
+    - rrsync_server
 
 - name: on debian gunzip the rsync
   unarchive: src=/usr/share/doc/rsync/scripts/rrsync.gz dest=/usr/local/bin copy=no mode=0755
@@ -33,7 +52,9 @@
         dest="/home/{{ rrsync_cron_user }}/.ssh/"
         owner="{{ rrsync_cron_user }}"
         mode=0600
-  when: rrsync_cron_user is defined and rrsync_client
+  when: 
+    - rrsync_cron_user is defined 
+    - rrsync_client
 
 - name: ensure rrsync_hosts are known hosts RSA
   lineinfile:
@@ -42,7 +63,10 @@
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t rsa ' + item) }}"
   with_items: "{{ rrsync_hosts }}"
-  when: rrsync_hosts.0 != "" and rrsync_client and rrsync_known_hosts_rsa
+  when: 
+    - rrsync_hosts.0 != "" 
+    - rrsync_client 
+    - rrsync_known_hosts_rsa
 
 - name: ensure rrsync_hosts are known hosts ECDSA
   lineinfile:
@@ -51,7 +75,10 @@
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -T 1 -t ecdsa ' + item) }}"
   with_items: "{{ rrsync_hosts }}"
-  when: rrsync_hosts.0 != "" and rrsync_client and rrsync_known_hosts_ecdsa
+  when: 
+    - rrsync_hosts.0 != "" 
+    - rrsync_client 
+    - rrsync_known_hosts_ecdsa
 
 - name: Set ownership
   file: path="/home/{{ rrsync_cron_user }}/.ssh/"
@@ -68,9 +95,16 @@
   when: rrsync_cron_user is defined and rrsync_client
 
 - name: Add rsync cronjobs
-  cron: name="{{ item.name }}" minute={{ item.minute }} hour={{ item.hour }}
-        user="{{ item.user }}"
-        job="{{ item.job }}"
-        cron_file="{{ item.name }}"
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute }}"
+    hour: "{{ item.hour }}"
+    day: "{{ item.day|default(omit) }}"
+    month: "{{ item.month|default(omit) }}"
+    weekday: "{{ item.weekday|default(omit) }}"
+    user: "{{ item.user }}"
+    job: "{{ item.job }}"
+    cron_file: "{{ item.name }}"
+    state: "{{ item.state|default(omit) }}"
   with_items: "{{ rrsync_commands }}"
   when: rrsync_commands.0.job != "" and rrsync_client
