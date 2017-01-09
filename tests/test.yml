@@ -1,0 +1,11 @@
+---
+- hosts: test.lxc
+  remote_user: root
+  become: True
+  roles:
+    - ansible-role-rrsync
+  vars:
+    - gpu: True
+
+# vim:ft=ansible:
+...
