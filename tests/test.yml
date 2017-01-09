@@ -5,7 +5,7 @@
   roles:
     - ansible-role-rrsync
   vars:
-    - gpu: True
+    - rrsync_cron_user: "myrsyncuser"
 
 # vim:ft=ansible:
 ...
