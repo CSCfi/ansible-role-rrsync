@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/CSC-IT-Center-for-Science/ansible-role-rrsync.svg?branch=master)](https://travis-ci.org/CSC-IT-Center-for-Science/ansible-role-rrsync)
+[![Build Status](https://travis-ci.org/CSCfi/ansible-role-rrsync.svg?branch=master)](https://travis-ci.org/CSCfi/ansible-role-rrsync)
 
 ansible-role-rrsync
 =========
@@ -35,7 +35,7 @@ Dependencies
 The user which users will be able to use with rsync+ssh needs to be configured as well.
 This is not part of this role, suggesting to use:
 
-https://github.com/CSC-IT-Center-for-Science/ansible-role-users
+https://github.com/CSCfi/ansible-role-users
 
 The directory/ies where rrsync will be allowed to write is not handled by this role either.
 
