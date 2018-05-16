@@ -15,11 +15,19 @@
     recurse: yes
     patterns: '.*rrsync$'
     use_regex: yes
+  check_mode: no
   register: reg_rrsync_find
+  when:
+    - ansible_os_family == "RedHat"
+    - rrsync_server
 
-- name: debug and print reg_rrsync_find
+- name: debug and print reg_rrsync_find when run with one -v
   debug:
     var: reg_rrsync_find
+    verbosity: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - rrsync_server
 
 - name: copy first rrsync script found with find to /usr/local/bin on RHEL7 derivatives
   copy:
@@ -32,6 +40,7 @@
   when: 
     - ansible_os_family == "RedHat" 
     - rrsync_server
+    - reg_rrsync_find.files|length > 0
 
 - name: on debian gunzip the rsync
   shell: gunzip < /usr/share/doc/rsync/scripts/rrsync.gz > /usr/local/bin/rrsync creates=/usr/local/bin/rrsync
