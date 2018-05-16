@@ -23,7 +23,7 @@
 
 - name: copy first rrsync script found with find to /usr/local/bin on RHEL7 derivatives
   copy:
-    src: "{{ reg_rrsync_find[0]['path'] }}"
+    src: "{{ reg_rrsync_find['files'][0]['path'] }}"
     dest: /usr/local/bin/rrsync 
     owner: root 
     group: root 
