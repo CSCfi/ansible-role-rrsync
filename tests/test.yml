@@ -6,6 +6,10 @@
     - ansible-role-rrsync
   vars:
     - rrsync_cron_user: "myrsyncuser"
+  post_tasks:
+    - name: stat rrsync script afterwards, only for testing to double-check it worked
+      stat:
+        path: /usr/local/bin/rrsync
 
 # vim:ft=ansible:
 ...
