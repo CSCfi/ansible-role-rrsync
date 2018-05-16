@@ -8,6 +8,21 @@
     state: installed
 
 ## Server
+
+- name: find rrsync script
+  find:
+    paths: /usr/share/doc/
+    recurse: yes
+    patterns: '.*rrsync$'
+    use_regex: yes
+  register: reg_rrsync_find
+
+- name: debug and print reg_rrsync_find
+  debug:
+    var: reg_rrsync_find
+
+# copy module with remote_src=yes?
+
 - name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
   file: 
     src: /usr/share/doc/rsync-3.0.9/support/rrsync 
