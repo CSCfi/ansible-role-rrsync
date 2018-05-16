@@ -21,34 +21,16 @@
   debug:
     var: reg_rrsync_find
 
-# copy module with remote_src=yes?
-
-- name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
-  file: 
-    src: /usr/share/doc/rsync-3.0.9/support/rrsync 
+- name: copy first rrsync script found with find to /usr/local/bin on RHEL7 derivatives
+  copy:
+    src: "{{ reg_rrsync_find[0]['path'] }}"
     dest: /usr/local/bin/rrsync 
     owner: root 
     group: root 
-    state: link 
     mode: 0755 
-    follow: yes
+    remote_src: yes
   when: 
     - ansible_os_family == "RedHat" 
-    - ansible_distribution_major_version == "7" 
-    - rrsync_server
-
-- name: symlink rrsync script to /usr/local/bin on RHEL6 derivatives
-  file: 
-    src: /usr/share/doc/rsync-3.0.6/support/rrsync 
-    dest: /usr/local/bin/rrsync 
-    owner: root 
-    group: root 
-    state: link 
-    mode: 0755 
-    follow: yes
-  when: 
-    - ansible_os_family == "RedHat" 
-    - ansible_distribution_major_version == "6" 
     - rrsync_server
 
 - name: on debian gunzip the rsync
