@@ -9,7 +9,7 @@
 
 ## Server
 
-- name: find rrsync script
+- name: find rrsync script - usually under /usr/share/doc/rsync.*
   find:
     paths: /usr/share/doc/
     recurse: yes
@@ -44,7 +44,9 @@
 
 - name: on debian gunzip the rsync
   shell: gunzip < /usr/share/doc/rsync/scripts/rrsync.gz > /usr/local/bin/rrsync creates=/usr/local/bin/rrsync
-  when: ansible_os_family == "Debian" and rrsync_server
+  when:
+    - ansible_os_family == "Debian"
+    - rrsync_server
 
 - name: create rrsync directory
   file:
@@ -52,7 +54,9 @@
     state: directory
     mode: 0755
     owner: "{{ rrsync_cron_user }}"
-  when: rrsync_server and rrsync_server_create_directory != False
+  when:
+    - rrsync_server_create_directory != False
+    - rrsync_server
 
 ## Client
 - name: Copy in private key
@@ -95,7 +99,9 @@
     owner: "{{ rrsync_cron_user }}"
     state: directory
     recurse: yes
-  when: rrsync_cron_user is defined and rrsync_client
+  when:
+    - rrsync_cron_user is defined
+    - rrsync_client
 
 - name: Set permission on .ssh
   file:
@@ -103,7 +109,9 @@
     owner: "{{ rrsync_cron_user }}"
     state: directory
     mode: 0700
-  when: rrsync_cron_user is defined and rrsync_client
+  when:
+    - rrsync_cron_user is defined
+    - rrsync_client
 
 - name: Add rsync cronjobs
   cron:
@@ -118,4 +126,6 @@
     cron_file: "{{ item.name }}"
     state: "{{ item.state|default(omit) }}"
   with_items: "{{ rrsync_commands }}"
-  when: rrsync_commands.0.job != "" and rrsync_client
+  when:
+    - rrsync_commands.0.job != ""
+    - rrsync_client
