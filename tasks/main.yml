@@ -5,7 +5,7 @@
 - name: Install rsync
   package: 
     name: rsync
-    state: installed
+    state: present
 
 ## Server
 
