@@ -5,53 +5,66 @@
 - name: Install rsync
   package: 
     name: rsync
-    state: installed
+    state: present
 
 ## Server
-- name: symlink rrsync script to /usr/local/bin on RHEL7 derivatives
-  file: 
-    src: /usr/share/doc/rsync-3.0.9/support/rrsync 
-    dest: /usr/local/bin/rrsync 
-    owner: root 
-    group: root 
-    state: link 
-    mode: 0755 
-    follow: yes
-  when: 
-    - ansible_os_family == "RedHat" 
-    - ansible_distribution_major_version == "7" 
+
+- name: find rrsync script - usually under /usr/share/doc/rsync.*
+  find:
+    paths: /usr/share/doc/
+    recurse: yes
+    patterns: '.*rrsync$'
+    use_regex: yes
+  check_mode: no
+  register: reg_rrsync_find
+  when:
+    - ansible_os_family == "RedHat"
     - rrsync_server
 
-- name: symlink rrsync script to /usr/local/bin on RHEL6 derivatives
-  file: 
-    src: /usr/share/doc/rsync-3.0.6/support/rrsync 
+- name: debug and print reg_rrsync_find when run with one -v
+  debug:
+    var: reg_rrsync_find
+    verbosity: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - rrsync_server
+
+- name: copy first rrsync script found with find to /usr/local/bin on RHEL7 derivatives
+  copy:
+    src: "{{ reg_rrsync_find['files'][0]['path'] }}"
     dest: /usr/local/bin/rrsync 
     owner: root 
     group: root 
-    state: link 
     mode: 0755 
-    follow: yes
+    remote_src: yes
   when: 
     - ansible_os_family == "RedHat" 
-    - ansible_distribution_major_version == "6" 
     - rrsync_server
+    - reg_rrsync_find.files|length > 0
 
 - name: on debian gunzip the rsync
   shell: gunzip < /usr/share/doc/rsync/scripts/rrsync.gz > /usr/local/bin/rrsync creates=/usr/local/bin/rrsync
-  when: ansible_os_family == "Debian" and rrsync_server
+  when:
+    - ansible_os_family == "Debian"
+    - rrsync_server
 
 - name: create rrsync directory
-  file: path={{ rsync_server_directory }} state=directory
-        mode=0755
-        owner={{ rrsync_cron_user }}
-  when: rrsync_server and rrsync_server_create_directory != False
+  file:
+    path: "{{ rsync_server_directory }}"
+    state: directory
+    mode: 0755
+    owner: "{{ rrsync_cron_user }}"
+  when:
+    - rrsync_server_create_directory != False
+    - rrsync_server
 
 ## Client
 - name: Copy in private key
-  copy: src="{{ rrsync_private_key }}"
-        dest="/home/{{ rrsync_cron_user }}/.ssh/"
-        owner="{{ rrsync_cron_user }}"
-        mode=0600
+  copy:
+    src: "{{ rrsync_private_key }}"
+    dest: "/home/{{ rrsync_cron_user }}/.ssh/"
+    owner: "{{ rrsync_cron_user }}"
+    mode: 0600
   when: 
     - rrsync_cron_user is defined 
     - rrsync_client
@@ -81,18 +94,24 @@
     - rrsync_known_hosts_ecdsa
 
 - name: Set ownership
-  file: path="/home/{{ rrsync_cron_user }}/.ssh/"
-        owner="{{ rrsync_cron_user }}"
-        state=directory
-        recurse=yes
-  when: rrsync_cron_user is defined and rrsync_client
+  file:
+    path: "/home/{{ rrsync_cron_user }}/.ssh/"
+    owner: "{{ rrsync_cron_user }}"
+    state: directory
+    recurse: yes
+  when:
+    - rrsync_cron_user is defined
+    - rrsync_client
 
 - name: Set permission on .ssh
-  file: path="/home/{{ rrsync_cron_user }}/.ssh/"
-        owner="{{ rrsync_cron_user }}"
-        state=directory
-        mode=0700
-  when: rrsync_cron_user is defined and rrsync_client
+  file:
+    path: "/home/{{ rrsync_cron_user }}/.ssh/"
+    owner: "{{ rrsync_cron_user }}"
+    state: directory
+    mode: 0700
+  when:
+    - rrsync_cron_user is defined
+    - rrsync_client
 
 - name: Add rsync cronjobs
   cron:
@@ -107,4 +126,6 @@
     cron_file: "{{ item.name }}"
     state: "{{ item.state|default(omit) }}"
   with_items: "{{ rrsync_commands }}"
-  when: rrsync_commands.0.job != "" and rrsync_client
+  when:
+    - rrsync_commands.0.job != ""
+    - rrsync_client
